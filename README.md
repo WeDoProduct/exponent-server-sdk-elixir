@@ -1,6 +1,11 @@
 ExponentServerSdk
 ========
 
+**This is an WeDoProduct fork of the fork [ExponentServerSdk](https://github.com/oviceinc/exponent-server-sdk-elixir) project for our use**
+
+ExponentServerSdk (Original Fork)
+========
+
 **This is an oVice fork of the original [ExponentServerSdk](https://github.com/rdrop/exponent-server-sdk-elixir) project which is heavily outdated and does not support newer Elixir versions**
 
 **The fork is just for making the library usable and adding the [access token feature](https://docs.expo.dev/push-notifications/sending-notifications/#additional-security), we might need to maintain this library even further by improving code quality, adding proper tests/mocks, use Tesla instead of Poison or abandon it and write a from scratch module in `ex-api`.**
@@ -20,7 +25,7 @@ You can install from Github:
 
 ```elixir
 def deps do
-  [{:exponent_server_sdk, git: "https://github.com/oviceinc/exponent-server-sdk-elixir.git"}]
+  [{:exponent_server_sdk, git: "https://github.com/WeDoProduct/exponent-server-sdk-elixir.git"}]
 end
 ```
 
