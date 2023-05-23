@@ -21,7 +21,7 @@ defmodule ExponentServerSdk.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 1.8"},
+      {:httpoison, "~> 2.1"},
       {:poison, "~> 5.0"},
       {:dialyze, "~> 0.2.1", only: [:dev, :test]},
       {:credo, "~> 0.10.0", only: [:dev, :test]},

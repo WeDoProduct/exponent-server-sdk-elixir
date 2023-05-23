@@ -62,15 +62,13 @@ defmodule ExponentServerSdk.PushNotification do
   @doc """
   Automatically adds the correct url to each API request.
   """
-  @spec process_url(String.t()) :: String.t()
-  def process_url(url) do
+  def process_request_url(url) do
     "https://exp.host/--/api/v2/push/" <> url
   end
 
   @doc """
   Automatically adds the correct headers to each API request.
   """
-  @spec process_request_headers(list) :: list
   def process_request_headers(headers \\ []) do
     headers
     |> Keyword.put(:Accepts, "application/json")
@@ -80,18 +78,6 @@ defmodule ExponentServerSdk.PushNotification do
     |> put_access_token()
   end
 
-  @doc """
-  Automatically adds the correct headers to each API request.
-  """
-
-  @spec put_access_token(keyword()) :: binary()
-  def put_access_token(headers) do
-    access_token = Application.get_env(:exponent_server_sdk, :access_token)
-
-    if access_token != nil,
-      do: Keyword.put(headers, :Authorization, "Bearer #{access_token}"),
-      else: headers
-  end
 
   @doc """
   Automatically process the request body using Poison JSON and GZip.
@@ -101,4 +87,13 @@ defmodule ExponentServerSdk.PushNotification do
     |> Poison.encode!()
     |> :zlib.gzip()
   end
+
+  defp put_access_token(headers) do
+    access_token = Application.get_env(:exponent_server_sdk, :access_token)
+
+    if access_token != nil,
+      do: Keyword.put(headers, :Authorization, "Bearer #{access_token}"),
+      else: headers
+  end
+
 end
