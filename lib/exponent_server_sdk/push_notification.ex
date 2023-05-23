@@ -31,7 +31,8 @@ defmodule ExponentServerSdk.PushNotification do
     message
     |> PushMessage.create()
 
-    PushNotification.post!("send", message)
+    PushNotification.post("send", message)
+    |> elem(1)
     |> Parser.parse()
   end
 
@@ -43,7 +44,8 @@ defmodule ExponentServerSdk.PushNotification do
     messages
     |> PushMessage.create_from_list()
 
-    PushNotification.post!("send", messages)
+    PushNotification.post("send", messages)
+    |> elem(1)
     |> Parser.parse_list(messages)
   end
 
@@ -55,7 +57,8 @@ defmodule ExponentServerSdk.PushNotification do
     ids
     |> PushMessage.create_receipt_id_list()
 
-    PushNotification.post!("getReceipts", %{ids: ids})
+    PushNotification.post("getReceipts", %{ids: ids})
+    |> elem(1)
     |> Parser.parse()
   end
 
@@ -78,7 +81,6 @@ defmodule ExponentServerSdk.PushNotification do
     |> put_access_token()
   end
 
-
   @doc """
   Automatically process the request body using Poison JSON and GZip.
   """
@@ -95,5 +97,4 @@ defmodule ExponentServerSdk.PushNotification do
       do: Keyword.put(headers, :Authorization, "Bearer #{access_token}"),
       else: headers
   end
-
 end

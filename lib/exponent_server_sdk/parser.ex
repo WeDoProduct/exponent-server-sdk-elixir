@@ -7,7 +7,7 @@ defmodule ExponentServerSdk.Parser do
   @type http_status_code :: number
   @type success :: {:ok, map}
   @type success_list :: {:ok, [map]}
-  @type error :: {:error, String.t(), http_status_code}
+  @type error :: {:error, String.t(), http_status_code} | {:error, any()}
 
   @type parsed_response :: success | error
   @type parsed_list_response :: success_list | error
@@ -24,7 +24,7 @@ defmodule ExponentServerSdk.Parser do
       iex> return_value
       {:ok, %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"}}
   """
-  @spec parse(HTTPoison.Response.t()) :: success | error
+  @spec parse(HTTPoison.Response.t() | HTTPoison.Error.t()) :: success | error
   def parse(response) do
     handle_errors(response, fn body ->
       {:ok, json} = Poison.decode(body)
@@ -44,7 +44,8 @@ defmodule ExponentServerSdk.Parser do
       iex> return_value
       {:ok, [%{"id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "status" => "ok"}, %{"id" => "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY", "status" => "ok"}]}
   """
-  @spec parse_list(HTTPoison.Response.t(), [map()] | []) :: success_list | error
+  @spec parse_list(HTTPoison.Response.t() | HTTPoison.Error.t(), [map()] | []) ::
+          success_list | error
   def parse_list(response, messages \\ []) do
     handle_errors(response, fn body ->
       {:ok, json} = Poison.decode(body)
@@ -84,6 +85,9 @@ defmodule ExponentServerSdk.Parser do
       %{body: body, status_code: status} ->
         {:ok, json} = Poison.decode(body)
         {:error, json["errors"], status}
+
+      %HTTPoison.Error{reason: reason} ->
+        {:error, reason}
     end
   end
 end

@@ -15,23 +15,12 @@ defmodule ExponentServerSdk.PushNotificationTest do
       body: "You got your first message"
     }
 
-    response = %{data: %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"}}
-    json = json_response(response, 200)
+    response =
+      %{data: %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"}}
+      |> json_response(200)
 
-    with_fixture(:post!, json, fn ->
-      # expected = {:ok, %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"}}
-      expected =
-        {:ok,
-         %{
-           "status" => "error",
-           "details" => %{
-             "error" => "DeviceNotRegistered",
-             "expoPushToken" => "ExponentPushToken[XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]"
-           },
-           "message" =>
-             "\"ExponentPushToken[XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]\" is not a registered push notification recipient"
-         }}
-
+    with_fixture(:post, {:ok, response}, fn ->
+      expected = {:ok, %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"}}
       assert expected == PushNotification.push(message_map)
     end)
   end
@@ -50,45 +39,23 @@ defmodule ExponentServerSdk.PushNotificationTest do
       }
     ]
 
-    response = %{
-      data: [
-        %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-        %{"status" => "ok", "id" => "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"}
-      ]
-    }
+    response =
+      %{
+        data: [
+          %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
+          %{"status" => "ok", "id" => "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"}
+        ]
+      }
+      |> json_response(200)
 
-    json = json_response(response, 200)
-
-    with_fixture(:post!, json, fn ->
-      # expected = {
-      #  :ok,
-      #  [
-      #    %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-      #    %{"status" => "ok", "id" => "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"}
-      #    ]
-      #  }
-      expected =
-        {:ok,
-         [
-           %{
-             "status" => "error",
-             "details" => %{
-               "error" => "DeviceNotRegistered",
-               "expoPushToken" => "ExponentPushToken[XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]"
-             },
-             "message" =>
-               "\"ExponentPushToken[XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]\" is not a registered push notification recipient"
-           },
-           %{
-             "status" => "error",
-             "details" => %{
-               "error" => "DeviceNotRegistered",
-               "expoPushToken" => "ExponentPushToken[YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY]"
-             },
-             "message" =>
-               "\"ExponentPushToken[YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY]\" is not a registered push notification recipient"
-           }
-         ]}
+    with_fixture(:post, {:ok, response}, fn ->
+      expected = {
+        :ok,
+        [
+          %{"status" => "ok", "id" => "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
+          %{"status" => "ok", "id" => "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"}
+        ]
+      }
 
       assert expected == PushNotification.push_list(message_list)
     end)
@@ -97,23 +64,22 @@ defmodule ExponentServerSdk.PushNotificationTest do
   test ".get_receipts should return the proper response from Expo" do
     ids = ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
 
-    response = %{
-      data: %{
-        "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": %{status: "ok"},
-        "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": %{status: "ok"}
+    response =
+      %{
+        data: %{
+          "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": %{status: "ok"},
+          "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": %{status: "ok"}
+        }
       }
-    }
+      |> json_response(200)
 
-    json = json_response(response, 200)
-
-    with_fixture(:post!, json, fn ->
-      # expected =
-      #  {:ok,
-      #   %{
-      #     "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" => %{"status" => "ok"},
-      #     "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY" => %{"status" => "ok"}
-      #   }}
-      expected = {:ok, %{}}
+    with_fixture(:post, {:ok, response}, fn ->
+      expected =
+        {:ok,
+         %{
+           "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" => %{"status" => "ok"},
+           "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY" => %{"status" => "ok"}
+         }}
 
       assert expected == PushNotification.get_receipts(ids)
     end)
